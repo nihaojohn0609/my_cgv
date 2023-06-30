@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/images/**" location="/resources/images/" />
+	<resources mapping="/js/**" location="/resources/js/" />
+	<resources mapping="/css/**" location="/resources/css/" />
+	<resources mapping="/upload/**" location="/resources/upload/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- Service  -->	
+	<!--  
+	<beans:bean id="memberService" class="com.mycgv_jsp.service.MemberServiceImpl"></beans:bean>
+	<beans:bean id="boardService" class="com.mycgv_jsp.service.BoardServiceImpl"></beans:bean>
+	<beans:bean id="noticeService" class="com.mycgv_jsp.service.NoticeServiceImpl"></beans:bean>
+	<beans:bean id="pageService" class="com.mycgv_jsp.service.PageServiceImpl"></beans:bean>
+	-->
+	
+	<!-- multipartResolver -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	</beans:bean> 
+	
+	<!-- sessionAuthInterceptor -->
+	<beans:bean id="sessionAuthInterceptor"
+		 class="com.mycgv_jsp.interceptor.SessionAuthInterceptor">
+	</beans:bean> 
+	
+	<!-- sessionAuthInterceptor check request -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/mypage.do"/>
+			<beans:ref bean="sessionAuthInterceptor"></beans:ref>
+		</interceptor>
+		<interceptor>
+			<mapping path="/admin*"/>
+			<beans:ref bean="sessionAuthInterceptor"></beans:ref>
+		</interceptor>	
+	</interceptors>
+		
+	<context:component-scan base-package="com.mycgv_jsp.controller" />	
+	<context:component-scan base-package="com.mycgv_jsp.dao" />	
+	<context:component-scan base-package="com.mycgv_jsp.service" />	
+	
+	
+	<context:property-placeholder location="classpath:db-config/email.properties" />
+
+   <!-- 이메일 인증 관련 빈 등록 -->
+   <beans:bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+      <beans:property name="host" value="smtp.gmail.com" />
+      <beans:property name="port" value="587" />
+      <beans:property name="username" value="gimjeonggeon386@gmail.com" />
+      <beans:property name="password" value="xvhf hqid kbmu aeyx" />
+      <beans:property name="javaMailProperties">
+         <beans:props>
+                <beans:prop key="mail.transport.protocol">smtp</beans:prop>
+                <beans:prop key="mail.smtp.auth">true</beans:prop>
+                <!-- gmail의 경우 보안문제 업데이트로 인해 SSLSocketFactory를 추가해야 smtp 사용 가능. -->
+                <beans:prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</beans:prop>
+                <beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+                <beans:prop key="mail.debug">true</beans:prop>
+                <beans:prop key="mail.smtp.ssl.trust">smtp.gmail.com</beans:prop>
+				<beans:prop key="mail.smtp.ssl.protocols">TLSv1.2</beans:prop>
+            </beans:props>
+      </beans:property>
+      
+   </beans:bean>
+	
+	
+	
+	
+</beans:beans>
+
+
+
+
